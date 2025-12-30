@@ -1,0 +1,24 @@
+{
+  "auth": {
+    "welcome": "خوش آمدید",
+    "subtitle": "برای ادامه وارد حساب خود شوید",
+    "loginWithGoogle": "ورود با گوگل",
+    "otherOptions": "سایر گزینه‌ها",
+    "orLoginWith": "یا ورود با",
+    "email": "ایمیل",
+    "phone": "تلفن",
+    "emailAddress": "آدرس ایمیل",
+    "phoneNumber": "شماره تلفن",
+    "phoneCode": "+98",
+    "verificationCode": "کد تایید",
+    "checkInbox": "صندوق ورودی یا پیامک خود را چک کنید",
+    "invalidCode": "کد نامعتبر است. مجدد تلاش کنید.",
+    "continue": "ادامه",
+    "continueAsGuest": "ادامه به صورت مهمان",
+    "termsText": "با ادامه دادن، شما قوانین ما را می‌پذیرید:",
+    "termsOfService": "شرایط استفاده",
+    "and": "و",
+    "privacy": "حریم خصوصی",
+    "enterEmailOrPhone": "لطفاً ایمیل یا شماره تلفن را وارد کنید"
+  }
+}

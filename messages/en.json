@@ -1,0 +1,24 @@
+{
+  "auth": {
+    "welcome": "Welcome",
+    "subtitle": "Sign in to continue",
+    "loginWithGoogle": "Login with Google",
+    "otherOptions": "Other Options",
+    "orLoginWith": "Or login with",
+    "email": "Email",
+    "phone": "Phone",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "phoneCode": "+1",
+    "verificationCode": "Verification Code",
+    "checkInbox": "Check your inbox or SMS",
+    "invalidCode": "Invalid code. Please try again.",
+    "continue": "Continue",
+    "continueAsGuest": "Continue as Guest",
+    "termsText": "By continuing, you agree to our:",
+    "termsOfService": "Terms of Service",
+    "and": "and",
+    "privacy": "Privacy Policy",
+    "enterEmailOrPhone": "Please enter email or phone"
+  }
+}
