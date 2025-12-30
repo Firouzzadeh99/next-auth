@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { usePathname, useRouter } from "@/src/i18n/navigation";
 import { Locale } from "@/src/config/data";
 import { useTheme } from "next-themes";
-import { Chrome, Apple, Linkedin, Twitter, Mail, Phone, ArrowLeft, Moon, Sun } from "lucide-react";
+import { Chrome, Apple, Linkedin, Twitter, ArrowLeft, Moon, Sun } from "lucide-react";
 
 export default function AuthPage() {
   const t = useTranslations("auth");
