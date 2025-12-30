@@ -1,13 +1,7 @@
-
-
-export default async function MainLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="w-full min-h-screen flex flex-col mx-auto bg-white">
-      <main className="w-full">{children}</main>
-    </div>
-  );
+  return <>{children}</>;
 }

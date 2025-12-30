@@ -3,5 +3,5 @@ export default async function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <main className="w-full">{children}</main>;
+  return <>{children}</>;
 }

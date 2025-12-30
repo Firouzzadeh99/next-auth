@@ -1,4 +1,3 @@
-import "../globals.css";
 import { Locale, NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { setRequestLocale, getMessages } from "next-intl/server";
@@ -6,6 +5,8 @@ import { ReactNode } from "react";
 import { Inter, Poppins, Outfit } from "next/font/google";
 import localFont from "next/font/local";
 import { routing } from "@/src/i18n/routing";
+import { ThemeProvider } from "@/src/providers/ThemeProvider";
+import "../globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,32 +61,27 @@ type Props = {
 const defaultMeta: Record<Locale, { title: string; description: string }> = {
   fa: {
     title: "نکست جی اس",
-    description:
-    "تست نکست جس اس"
-   },
+    description: "تست نکست جس اس",
+  },
   en: {
     title: "next.js",
-    description:
-    "test next.js "
-   },
- 
+    description: "test next.js ",
+  },
 };
+
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
- export async function generateMetadata({ params }: Omit<Props, "children">) {
+export async function generateMetadata({ params }: Omit<Props, "children">) {
   const { locale } = await params;
-
   const meta = defaultMeta[locale] || defaultMeta["en"];
 
   return {
     ...meta,
-    other: {
-      enamad: "64790285",
-    },
   };
 }
+
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
 
@@ -94,25 +90,30 @@ export default async function LocaleLayout({ children, params }: Props) {
   }
 
   setRequestLocale(locale);
-
   const messages = await getMessages();
-
-  const fontClass = locale === "en" ? inter.className : iransans.className;
 
   return (
     <html
       lang={locale}
       dir={locale === "fa" ? "rtl" : "ltr"}
-      className={
-        locale === "en"
-          ? `${inter.variable} ${poppins.variable} ${outfit.variable}`
-          : `${iransans.variable}`
-      }
+      suppressHydrationWarning
     >
-      <body className={fontClass}>
-        <NextIntlClientProvider messages={messages}>
-          {children}
-          <div id="portal-root" />
+      <body
+        className={
+          locale === "en"
+            ? `${inter.variable} ${poppins.variable} ${outfit.variable}`
+            : `${iransans.variable}`
+        }
+      >
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="w-full min-h-screen">{children}</div>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>

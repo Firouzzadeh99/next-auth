@@ -1,308 +1,297 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { Mail, Phone, Chrome } from "lucide-react";
 import { usePathname, useRouter } from "@/src/i18n/navigation";
 import { Locale } from "@/src/config/data";
+import { useTheme } from "next-themes";
+import { Chrome, Apple, Linkedin, Twitter, Mail, Phone, ArrowLeft, Moon, Sun } from "lucide-react";
 
 export default function AuthPage() {
   const t = useTranslations("auth");
   const locale = useLocale();
   const router = useRouter();
-  const [loginMethod, setLoginMethod] = useState<"email" | "phone">("email");
-  const [emailOrPhone, setEmailOrPhone] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
-  const [showVerification, setShowVerification] = useState(false);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const pathname = usePathname();
-  const isRTL = locale === "fa" || locale === "ar";
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const socialProviders = [
-    { name: "Microsoft", icon: "🪟", color: "bg-blue-600" },
-    { name: "Facebook", icon: "👤", color: "bg-blue-700" },
-    { name: "Github", icon: "⚫", color: "bg-gray-800" },
-    { name: "Gitlab", icon: "🦊", color: "bg-orange-600" },
-    { name: "Discord", icon: "🎮", color: "bg-indigo-600" },
-  ];
+  const [loginType, setLoginType] = useState<"email" | "phone">("email");
+  const [mainInput, setMainInput] = useState("");
+  const [otpInput, setOtpInput] = useState("");
+  const [isOtpStep, setIsOtpStep] = useState(false);
+  const [error, setError] = useState("");
+  const [showMoreSocials, setShowMoreSocials] = useState(false);
 
-  const languages = [
-    { code: "fa", label: "فارسی", flag: "🇮🇷" },
-    { code: "en", label: "English", flag: "🇬🇧" },
-  ];
+  const isRTL = locale === "fa";
 
-  const handleSocialLogin = (provider: string) => {
-    alert(`ورود با ${provider}`);
-  };
+  // برای جلوگیری از hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  const handleGoogleLogin = () => {
-    alert("ورود با Google");
-  };
-
+  // شبیه‌سازی ارسال کد OTP
   const handleContinue = () => {
-    setError("");
-
-    if (!showVerification) {
-      if (emailOrPhone.trim() === "") {
+    if (!isOtpStep) {
+      if (mainInput.length > 3) {
+        setIsOtpStep(true);
+        setError("");
+      } else {
         setError(t("enterEmailOrPhone"));
-        return;
       }
-
-      setLoading(true);
-      setTimeout(() => {
-        setShowVerification(true);
-        setLoading(false);
-      }, 1000);
     } else {
-      if (verificationCode.trim() === "" || verificationCode.length !== 6) {
+      if (otpInput.length === 6) {
+        // در فایل تسک، به app.html ریدایرکت می‌شود. ما اینجا می‌توانیم به صفحه اصلی ریدایرکت کنیم.
+        router.push("/app");
+      } else {
         setError(t("invalidCode"));
-        return;
       }
-
-      setLoading(true);
-      setTimeout(() => {
-        alert("ورود موفق!");
-        setLoading(false);
-      }, 1000);
     }
+  };
+
+  const resetForm = () => {
+    setIsOtpStep(false);
+    setMainInput("");
+    setOtpInput("");
+    setError("");
   };
 
   const changeLanguage = (newLocale: Locale) => {
     router.replace(pathname, { locale: newLocale });
   };
 
+   if (!mounted) return null;
+
   return (
-    <div
-      className={`min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 flex items-center justify-center p-4`}
-    >
-      <div className="w-full max-w-md">
-        {/* Language Switcher */}
-        <div
-          className={`flex ${
-            isRTL ? "justify-start" : "justify-end"
-          } mb-4 gap-2`}
-        >
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => changeLanguage(lang.code as Locale)}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition shadow-sm ${
-                locale === lang.code
-                  ? "bg-purple-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <span className="mr-1">{lang.flag}</span>
-              {lang.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Main Card */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-              <span className="text-3xl">🤖</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              {t("welcome")}
-            </h1>
-            <p className="text-gray-600">{t("subtitle")}</p>
+    <div className="min-h-screenflex flex-col">
+      {/* Navbar */}
+      <nav className="absolute top-0 w-full p-6 flex justify-between items-center z-10">
+        <div className="font-bold text-xl tracking-tight flex items-center gap-2">
+          <div className="w-8 h-8 bg-text-primary text-bg-primary rounded-lg flex items-center justify-center text-xs font-black">
+            AI
           </div>
-
-          {/* Google Login Button */}
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {/* Theme Toggle */}
           <button
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="w-full bg-white border-2 border-gray-300 hover:border-blue-500 text-gray-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition mb-4 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-border-color transition"
           >
-            <Chrome className="w-5 h-5 text-blue-600" />
-            {t("loginWithGoogle")}
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          {/* Other Options Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+          {/* Language Toggle */}
+          <div className="flex items-center gap-2 scale-90">
+            <span className="text-xs text-text-secondary font-bold">EN</span>
+            <div className="relative inline-block w-10 align-middle select-none">
+              <input
+                type="checkbox"
+                id="lang-toggle"
+                checked={isRTL}
+                onChange={() => changeLanguage(isRTL ? "en" : "fa")}
+                className="toggle-checkbox absolute block w-5 h-5 rounded-full bg-bg-primary border-2 border-border-color appearance-none cursor-pointer transition-all duration-300 left-0 checked:left-5"
+              />
+              <label htmlFor="lang-toggle" className="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500 font-medium">
-                {t("otherOptions")}
-              </span>
-            </div>
+            <span className="text-xs text-text-secondary font-bold">FA</span>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="auth-card">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold mb-2">
+              {t("welcome")}
+            </h1>
+            <p className="text-text-secondary text-sm">
+              {t("subtitle")}
+            </p>
           </div>
 
-          {/* Social Providers Grid */}
-          <div className="grid grid-cols-5 gap-3 mb-6">
-            {socialProviders.map((provider) => (
-              <button
-                key={provider.name}
-                onClick={() => handleSocialLogin(provider.name)}
-                disabled={loading}
-                className={`${provider.color} text-white p-3 rounded-xl hover:opacity-90 transition text-2xl flex items-center justify-center shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed h-14`}
-                title={provider.name}
-              >
-                {provider.icon}
+          {/* Social Section */}
+          <div className="space-y-3">
+            <button className="btn-outline w-full justify-center gap-2 font-medium">
+              <Chrome size={20} />
+              <span>{t("loginWithGoogle")}</span>
+            </button>
+
+            <div className="grid grid-cols-3 gap-3">
+              <button className="btn-outline">
+                <Apple size={20} />
               </button>
-            ))}
+              <button className="btn-outline">
+                <Linkedin size={20} />
+              </button>
+              <button className="btn-outline">
+                <Twitter size={20} />
+              </button>
+            </div>
+
+            {/* More Socials Accordion */}
+            <div className="text-center">
+              <button
+                onClick={() => setShowMoreSocials(!showMoreSocials)}
+                className="text-xs cursor-pointer text-text-secondary hover:text-text-primary transition underline decoration-dotted"
+              >
+                {t("moreOptions")}
+              </button>
+              
+              <div className={`expandable-grid ${showMoreSocials ? "open" : ""}`}>
+                {["Microsoft", "Facebook", "Github", "Gitlab", "Discord"].map((social, idx) => (
+                  <div key={idx} className="social-chip">
+                    {social}
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Or Login With Divider */}
-          <div className="relative my-6">
+          {/* Divider */}
+          <div className="relative py-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              <div className="w-full border-t border-border-color"></div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500 font-medium">
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-bg-primary px-2 text-text-secondary">
                 {t("orLoginWith")}
               </span>
             </div>
           </div>
 
-          {/* Email/Phone Toggle */}
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setLoginMethod("email")}
-              disabled={showVerification}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
-                loginMethod === "email"
-                  ? "bg-purple-600 text-white shadow-md"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <Mail className={`w-4 h-4 inline ${isRTL ? "ml-2" : "mr-2"}`} />
-              {t("email")}
-            </button>
-            <button
-              onClick={() => setLoginMethod("phone")}
-              disabled={showVerification}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition ${
-                loginMethod === "phone"
-                  ? "bg-purple-600 text-white shadow-md"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              <Phone className={`w-4 h-4 inline ${isRTL ? "ml-2" : "mr-2"}`} />
-              {t("phone")}
-            </button>
-          </div>
-
-          {/* Input Fields */}
-          {!showVerification ? (
-            <div className="mb-4">
-              {loginMethod === "phone" && (
-                <div
-                  className={`flex gap-2 ${isRTL ? "flex-row-reverse" : ""}`}
+          {/* Form Section */}
+          <div className="space-y-4">
+            {/* Toggle Email/Phone */}
+            <div className="flex justify-center mb-2">
+              <div className="toggle-group">
+                <button
+                  type="button"
+                  className={`toggle-btn ${loginType === "email" ? "active" : ""}`}
+                  onClick={() => {
+                    setLoginType("email");
+                    resetForm();
+                  }}
                 >
-                  <input
-                    type="text"
-                    value={t("phoneCode")}
-                    readOnly
-                    className="w-20 px-3 py-3 border-2 border-gray-300 rounded-lg bg-gray-50 text-center font-medium"
-                  />
-                  <input
-                    type="tel"
-                    placeholder={t("phoneNumber")}
-                    value={emailOrPhone}
-                    onChange={(e) =>
-                      setEmailOrPhone(e.target.value.replace(/\D/g, ""))
-                    }
-                    className={`flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition ${
-                      isRTL ? "text-right" : "text-left"
-                    }`}
-                  />
-                </div>
-              )}
-              {loginMethod === "email" && (
-                <input
-                  type="email"
-                  placeholder={t("emailAddress")}
-                  value={emailOrPhone}
-                  onChange={(e) => setEmailOrPhone(e.target.value)}
-                  className={`w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition ${
-                    isRTL ? "text-right" : "text-left"
-                  }`}
-                />
-              )}
+                  {t("email")}
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-btn ${loginType === "phone" ? "active" : ""}`}
+                  onClick={() => {
+                    setLoginType("phone");
+                    resetForm();
+                  }}
+                >
+                  {t("phone")}
+                </button>
+              </div>
             </div>
-          ) : (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+
+            {/* Main Input */}
+            <div className="relative">
+              <label className="block text-xs font-medium mb-1.5 ml-1 mr-1 text-text-secondary">
+                {loginType === "email" 
+                  ? t("emailAddress")
+                  : t("phoneNumber")}
+              </label>
+              <div className="relative">
+                {loginType === "phone" && (
+                  <span className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-xs bg-bg-secondary px-2 py-1 rounded border border-border-color`}>
+                    {t("phoneCode")}
+                  </span>
+                )}
+                <input
+                  type={loginType === "email" ? "email" : "tel"}
+                  value={mainInput}
+                  onChange={(e) => {
+                    setMainInput(e.target.value);
+                    setError("");
+                  }}
+                  disabled={isOtpStep}
+                  className={`input-field ${isRTL ? "text-right" : "text-left"} ${loginType === "phone" && isRTL ? "pr-12" : loginType === "phone" ? "pl-12" : ""}`}
+                  placeholder={
+                    loginType === "email" 
+                      ? "name@example.com" 
+                      : "912 345 6789"
+                  }
+                />
+              </div>
+            </div>
+
+            {/* OTP Input */}
+            <div className={`otp-section ${isOtpStep ? "visible" : ""}`}>
+              <label className="block text-xs font-medium mb-1.5 ml-1 mr-1 text-text-secondary">
                 {t("verificationCode")}
               </label>
               <input
                 type="text"
-                placeholder="------"
-                value={verificationCode}
-                onChange={(e) =>
-                  setVerificationCode(
-                    e.target.value.replace(/\D/g, "").slice(0, 6)
-                  )
-                }
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none text-center text-2xl tracking-widest transition font-mono"
+                value={otpInput}
+                onChange={(e) => {
+                  setOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  setError("");
+                }}
                 maxLength={6}
+                className="input-field text-center tracking-[0.5em] font-mono text-lg"
+                placeholder="••••••"
               />
-              <p className="text-sm text-gray-500 mt-2 text-center">
+              <p className="text-[10px] text-text-secondary mt-1 text-center">
                 {t("checkInbox")}
               </p>
             </div>
-          )}
 
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-shake">
-              <p className="text-red-600 text-sm text-center">{error}</p>
-            </div>
-          )}
-
-          {/* Continue Button */}
-          <button
-            onClick={handleContinue}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:from-purple-700 hover:to-blue-700 transition shadow-lg hover:shadow-xl mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>...</span>
+            {/* Error Message */}
+            {error && (
+              <div className="hidden bg-red-50 text-red-600 text-xs p-2 rounded-lg text-center border border-red-100">
+                {error}
               </div>
-            ) : (
-              t("continue")
             )}
-          </button>
 
-          {/* Guest Login */}
-          <button
-            onClick={() => alert("ورود مهمان")}
-            disabled={loading}
-            className="w-full text-gray-600 hover:text-purple-600 font-medium py-2 transition disabled:opacity-50"
-          >
-            {t("continueAsGuest")}
-          </button>
+            {/* Continue Button */}
+            <button
+              onClick={handleContinue}
+              className="btn-primary mt-2"
+            >
+              <span>
+                {isOtpStep 
+                  ? t("signIn") 
+                  : t("continue")}
+              </span>
+              <ArrowLeft className={isRTL ? "" : "rotate-180"} />
+            </button>
 
-          {/* Terms */}
-          <div className="mt-6 text-center text-xs text-gray-500 leading-relaxed">
-            <p>
+            {/* Guest Login */}
+            <button
+              onClick={() => alert(t("guestLogin"))}
+              className="w-full text-xs text-text-secondary hover:text-text-primary mt-2 transition"
+            >
+              {t("continueAsGuest")}
+            </button>
+          </div>
+
+          {/* Footer Legal */}
+          <div className="mt-8 pt-4 border-t border-border-color text-center">
+            <p className="text-[10px] text-text-secondary leading-relaxed">
               {t("termsText")}{" "}
               <a
                 href="#"
-                className="text-purple-600 hover:underline font-medium"
+                className="underline hover:text-text-primary mx-1"
               >
                 {t("termsOfService")}
               </a>{" "}
               {t("and")}{" "}
               <a
                 href="#"
-                className="text-purple-600 hover:underline font-medium"
+                className="underline hover:text-text-primary mx-1"
               >
                 {t("privacy")}
               </a>
+              .
             </p>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
