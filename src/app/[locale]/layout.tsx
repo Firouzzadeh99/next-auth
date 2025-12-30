@@ -70,16 +70,7 @@ const defaultMeta: Record<Locale, { title: string; description: string }> = {
 };
 
 export function generateStaticParams() {
-   const params: Array<{ locale: string; rest: string[] }> = [];
-
-  routing.locales.forEach((locale) => {
-    const pages = routing.pages[locale];
-    pages.forEach((page) => {
-      params.push({ locale, rest: [page] });
-    });
-  });
-
-  return params;
+  return routing.locales.map((locale) => ({ locale }));
 }
 
 export async function generateMetadata({ params }: Omit<Props, "children">) {
