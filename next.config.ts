@@ -5,7 +5,7 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: process.env.NODE_ENV === "production" ? "/<REPO_NAME>" : "",
+  basePath: process.env.NODE_ENV === "production" ? "/next-auth" : "",
   images: {
     unoptimized: true,
   },
