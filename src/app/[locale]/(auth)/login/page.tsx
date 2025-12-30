@@ -197,11 +197,7 @@ export default function AuthPage() {
                   : t("phoneNumber")}
               </label>
               <div className="relative">
-                {loginType === "phone" && (
-                  <span className={`absolute ${isRTL ? "right-3" : "left-3"} top-1/2 -translate-y-1/2 text-xs bg-bg-secondary px-2 py-1 rounded border border-border-color`}>
-                    {t("phoneCode")}
-                  </span>
-                )}
+                 
                 <input
                   type={loginType === "email" ? "email" : "tel"}
                   value={mainInput}
@@ -210,7 +206,7 @@ export default function AuthPage() {
                     setError("");
                   }}
                   disabled={isOtpStep}
-                  className={`input-field ${isRTL ? "text-right" : "text-left"} ${loginType === "phone" && isRTL ? "pr-12" : loginType === "phone" ? "pl-12" : ""}`}
+                  className={`input-field ${!isRTL ? "text-right" : "text-left"} ${loginType === "phone" && isRTL ? "pr-32" : loginType === "phone" ? "pl-12" : ""}`}
                   placeholder={
                     loginType === "email" 
                       ? "name@example.com" 
