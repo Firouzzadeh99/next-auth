@@ -32,15 +32,15 @@ jobs:
           corepack enable
           yarn install --frozen-lockfile
 
-      - name: Generate static site
-        env:
-          NUXT_APP_BASE_URL: /${{ github.event.repository.name }}/
-        run: yarn generate
+      - name: Build and Export Next.js site
+        run: |
+          yarn build
+          yarn export
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .output/public
+          path: out
 
   deploy:
     needs: build
@@ -52,4 +52,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
