@@ -26,17 +26,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "yarn"
+          cache: "npm"
 
       - name: Install dependencies
-        run: |
-          corepack enable
-          yarn install --frozen-lockfile
+        run: npm ci
 
       - name: Build & Export Next.js site
         run: |
-          yarn build
-          yarn export
+          npm run build
+          npm run export
 
       - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
